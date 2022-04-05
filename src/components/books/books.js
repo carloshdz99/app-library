@@ -6,6 +6,9 @@ import { getBooks } from "../../api/books";
 //importando modal
 import ModalComponent from "../Modal/Modal";
 
+//formulario para agregar libros
+import AddBookFormComponent from "../Forms/AddBookForm/AddBookForm";
+
 const BooksComponent = () => {
 
     const [modalShow, setModalShow] = React.useState(false);
@@ -26,7 +29,7 @@ const BooksComponent = () => {
         setModalShow(true)
         setModalTitle('New Book')
         setModalContent(
-            <h1>contenido de modal</h1>
+            <AddBookFormComponent />
         )
     }
 
