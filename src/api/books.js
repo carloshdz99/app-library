@@ -51,3 +51,21 @@ export const saveBook = async (data) => {
         .then(result => { return result })
         .catch(err => { return err })
 }
+
+//funcion para actualizar un libro
+export const updateBook = async (data) => {
+    const url = `${baseUrl}/api/v1/mnt-book/updateBook`
+
+    const params = {
+        method: "PUT",
+        body: JSON.stringify(data),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    };
+
+    return await fetch(url, params)
+        .then(response => { return response.json() })
+        .then(result => { return result })
+        .catch(err => { return err })
+}

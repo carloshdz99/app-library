@@ -3,11 +3,11 @@ import React from "react";
 import Select from "react-select";
 
 //importando peticiones
-import { getGenres, saveBook } from "../../../api/books";
+import { getGenres, saveBook, updateBook } from "../../../api/books";
 
 import { toastAlert } from "../../../helper/Alerts";
 
-const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
+const EditBookFormComponent = ({ setModalShow, setReloadBooks, bookData }) => {
 
     const [genresList, setGenresList] = React.useState([])
     React.useEffect(() => {
@@ -18,12 +18,27 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
         })
     }, [])
 
+
     const genreItems = genresList.map(item => {
         return { value: item.id, label: item.name }
     })
 
     //toma los datos del formulario
     const [form, setForm] = React.useState({});
+    React.useEffect(()=>{
+        setForm({
+            id: bookData.id,
+            title: bookData.title,
+            author: bookData.author,
+            published: bookData.published,
+            year: bookData.year,
+            stock: bookData.stock,
+        })
+    },[bookData])
+
+    console.log(bookData.published);
+
+
     //tomara los errores
     const [errors, setErrors] = React.useState({})
 
@@ -72,11 +87,11 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
             toastAlert("error", "Incomplete form")
         } else {
             //enviando informacion a servidor
-            saveBook(form).then(response => {
+            updateBook(form).then(response => {
                 if (response) {
                     setReloadBooks(true)
                     setModalShow(false)
-                    toastAlert('success', 'Saved book')
+                    toastAlert('success', 'Updated Book')
                 }
             })
         }
@@ -91,7 +106,7 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
                     <form onChange={handleChange} onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label className="form-label">Title:</label>
-                            <input type="text" name="title" className={errors.title ? "form-control is-invalid" : "form-control"} />
+                            <input type="text" name="title" value={form.title} className={errors.title ? "form-control is-invalid" : "form-control"} />
                             {errors.title && (
                                 <div className="invalid-feedback">
                                     {errors.title}
@@ -100,7 +115,7 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Author:</label>
-                            <input type="text" name="author" className={errors.author ? "form-control is-invalid" : "form-control"} />
+                            <input type="text" name="author" value={form.author} className={errors.author ? "form-control is-invalid" : "form-control"} />
                             {errors.author && (
                                 <div className="invalid-feedback">
                                     {errors.author}
@@ -109,7 +124,7 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Published:</label>
-                            <input type="date" name="published" className={errors.published ? "form-control is-invalid" : "form-control"} />
+                            <input type="date" name="published" value={form.published} className={errors.published ? "form-control is-invalid" : "form-control"} />
                             {errors.published && (
                                 <div className="invalid-feedback">
                                     {errors.published}
@@ -118,7 +133,7 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Year:</label>
-                            <input type="number" name="year" className={errors.year ? "form-control is-invalid" : "form-control"} />
+                            <input type="number" name="year" value={form.year} className={errors.year ? "form-control is-invalid" : "form-control"} />
                             {errors.year && (
                                 <div className="invalid-feedback">
                                     {errors.year}
@@ -127,7 +142,7 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Stock:</label>
-                            <input type="number" name="stock" className={errors.stock ? "form-control is-invalid" : "form-control"} />
+                            <input type="number" name="stock" value={form.stock} className={errors.stock ? "form-control is-invalid" : "form-control"} readOnly/>
                             {errors.stock && (
                                 <div className="invalid-feedback">
                                     {errors.stock}
@@ -159,4 +174,4 @@ const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
     )
 }
 
-export default AddBookFormComponent
+export default EditBookFormComponent
