@@ -1,29 +1,85 @@
 import React from "react";
 
-//importando peticiones
-import { getGenres } from "../../../api/books";
+import Select from "react-select";
 
-const AddBookFormComponent = (props) => {
+//importando peticiones
+import { getGenres, saveBook } from "../../../api/books";
+
+import { toastAlert } from "../../../helper/Alerts";
+
+const AddBookFormComponent = ({ setModalShow, setReloadBooks }) => {
 
     const [genresList, setGenresList] = React.useState([])
     React.useEffect(() => {
-
+        getGenres().then(response => {
+            if (response) {
+                setGenresList(response.genres)
+            }
+        })
     }, [])
+
+    const genreItems = genresList.map(item => {
+        return { value: item.id, label: item.name }
+    })
 
     //toma los datos del formulario
     const [form, setForm] = React.useState({});
+    //tomara los errores
+    const [errors, setErrors] = React.useState({})
 
     //funcion para cambiar el estado
     const handleChange = (e) => {
         setForm({
             ...form,
-            [e.target.name]: e.target.name
+            [e.target.name]: e.target.value
         })
     }
 
     //funcion para enviar la informacion del formulario
     const handleSubmit = (e) => {
         e.preventDefault()
+
+        let Bandera = false //servira para saber que el formulario se valido bien
+        let ObjectoErrores = {}
+        setErrors({})
+        if (!form.title) {
+            ObjectoErrores.title = "required field"
+            Bandera = true
+        }
+        if (!form.author) {
+            ObjectoErrores.author = "required field"
+            Bandera = true
+        }
+        if (!form.published) {
+            ObjectoErrores.published = "required field"
+            Bandera = true
+        }
+        if (!form.year) {
+            ObjectoErrores.year = "required field"
+            Bandera = true
+        }
+        if (!form.stock) {
+            ObjectoErrores.stock = "required field"
+            Bandera = true
+        }
+        if (!form.id_genre) {
+            ObjectoErrores.id_genre = "required field"
+            Bandera = true
+        }
+
+        if (Bandera) {
+            setErrors(ObjectoErrores)
+            toastAlert("error", "Formulario incompleto")
+        } else {
+            //enviando informacion a servidor
+            saveBook(form).then(response => {
+                if (response) {
+                    setReloadBooks(true)
+                    setModalShow(false)
+                    toastAlert('success', 'Libro Registrado')
+                }
+            })
+        }
     }
 
     //retornando
@@ -35,23 +91,66 @@ const AddBookFormComponent = (props) => {
                     <form onChange={handleChange} onSubmit={handleSubmit}>
                         <div className="mb-3">
                             <label className="form-label">Title:</label>
-                            <input type="text" className="form-control" />
+                            <input type="text" name="title" className={errors.title ? "form-control is-invalid" : "form-control"} />
+                            {errors.title && (
+                                <div className="invalid-feedback">
+                                    {errors.title}
+                                </div>
+                            )}
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Author:</label>
-                            <input type="text" className="form-control" />
+                            <input type="text" name="author" className={errors.author ? "form-control is-invalid" : "form-control"} />
+                            {errors.author && (
+                                <div className="invalid-feedback">
+                                    {errors.author}
+                                </div>
+                            )}
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Published:</label>
-                            <input type="date" className="form-control" />
+                            <input type="date" name="published" className={errors.published ? "form-control is-invalid" : "form-control"} />
+                            {errors.published && (
+                                <div className="invalid-feedback">
+                                    {errors.published}
+                                </div>
+                            )}
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Year:</label>
-                            <input type="text" className="form-control" readOnly/>
+                            <input type="number" name="year" className={errors.year ? "form-control is-invalid" : "form-control"} />
+                            {errors.year && (
+                                <div className="invalid-feedback">
+                                    {errors.year}
+                                </div>
+                            )}
                         </div>
                         <div className="mb-3">
                             <label className="form-label">Stock:</label>
-                            <input type="number" className="form-control" />
+                            <input type="number" name="stock" className={errors.stock ? "form-control is-invalid" : "form-control"} />
+                            {errors.stock && (
+                                <div className="invalid-feedback">
+                                    {errors.stock}
+                                </div>
+                            )}
+                        </div>
+                        <div className="mb-3">
+                            <label className="form-label">Genero:</label>
+                            <Select
+                                className={errors.id_genre && "is-invalid"}
+                                options={genreItems}
+                                onChange={e => {
+                                    setForm({ ...form, id_genre: e.value })
+                                }}
+                            />
+                            {errors.id_genre && (
+                                <div className="invalid-feedback">
+                                    {errors.id_genre}
+                                </div>
+                            )}
+                        </div>
+                        <div className="mb-3">
+                            <button type="submit" className="btn btn-dark">Save</button>
                         </div>
                     </form>
                 </div>

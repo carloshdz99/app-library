@@ -33,3 +33,21 @@ export const getGenres = async () => {
         .then(result => { return result })
         .catch(err => { return err })
 }
+
+//funcion para crear un nuevo libro
+export const saveBook = async (data) => {
+    const url = `${baseUrl}/api/v1/mnt-book/store`
+
+    const params = {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    };
+
+    return await fetch(url, params)
+        .then(response => { return response.json() })
+        .then(result => { return result })
+        .catch(err => { return err })
+}

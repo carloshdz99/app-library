@@ -9,6 +9,9 @@ import ModalComponent from "../Modal/Modal";
 //formulario para agregar libros
 import AddBookFormComponent from "../Forms/AddBookForm/AddBookForm";
 
+import { MdDeleteForever, MdEdit } from 'react-icons/md'
+import { RiReservedLine } from 'react-icons/ri'
+
 const BooksComponent = () => {
 
     const [modalShow, setModalShow] = React.useState(false);
@@ -16,20 +19,22 @@ const BooksComponent = () => {
     const [modalTitle, setModalTitle] = React.useState("");
 
     const [booksList, setBooksList] = React.useState([])
+    const [reloadBooks, setReloadBooks] = React.useState(false)
     React.useEffect(() => {
         getBooks().then(response => {
             if (response) {
                 setBooksList(response.books)
             }
         })
-    }, [])
+        setReloadBooks(false)
+    }, [reloadBooks])
 
     //funcion para abrir modal
     const handleAddBook = () => {
         setModalShow(true)
         setModalTitle('New Book')
         setModalContent(
-            <AddBookFormComponent />
+            <AddBookFormComponent setModalShow={setModalShow} setReloadBooks={setReloadBooks} />
         )
     }
 
@@ -43,9 +48,9 @@ const BooksComponent = () => {
                 <td>{item.stock}</td>
                 <td>{item.id}</td>
                 <td>
-                    <button className="btn btn-primary btn-rounded">R</button>
-                    <button className="btn btn-warning btn-rounded">E</button>
-                    <button className="btn btn-danger btn-rounded">D</button>
+                    <button className="btn btn-primary btn-circle"><RiReservedLine /></button>
+                    <button className="btn btn-warning btn-circle"><MdEdit /></button>
+                    <button className="btn btn-danger btn-circle"><MdDeleteForever /></button>
                 </td>
             </tr>
         )
